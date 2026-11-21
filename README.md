@@ -1,108 +1,301 @@
-# Syntekra — public website
+# Syntekra — Public Website
 
-The public marketing site for Syntekra (custom software, AI agents, process automation and system
-integration). Built with Vue 3, TypeScript, Vite and Tailwind CSS v4, and prerendered to static HTML
-at build time.
+The official public website for **Syntekra**, a technology company specializing in custom software development, AI agents, business process automation, and system integration.
 
-## Commands
+Built with **Vue 3, TypeScript, Vite, and Tailwind CSS v4**, with static HTML prerendering for fast loading, SEO, and efficient deployment.
 
-```sh
+## Technology Stack
+
+- **Vue 3** — Frontend framework
+- **TypeScript** — Type-safe development
+- **Vite** — Development server and build tooling
+- **Tailwind CSS v4** — Styling and design system
+- **Vue Server Renderer** — Build-time static HTML generation
+- **Oxlint, ESLint, and Prettier** — Code quality and formatting
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (a version compatible with the project's dependencies)
+- npm
+
+### Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/Syntekra-Technologies/syntekra-web.git
+cd syntekra-web
 npm install
-npm run dev        # development server
-npm run build      # type-check + production build + static prerender -> dist/
-npm run preview    # serve dist/ locally
-npm run lint       # oxlint + eslint
-npm run format     # prettier
 ```
 
-## Configuration (required before launch)
+Start the development server:
 
-All configuration is done with Vite environment variables. Values are embedded into the public
-bundle, so **never put secrets here**. See [`.env.example`](.env.example).
-
-| Variable                     | Purpose                                                              | Default                    |
-| ---------------------------- | -------------------------------------------------------------------- | -------------------------- |
-| `VITE_SITE_URL`              | Canonical origin for canonical URL, Open Graph, sitemap, robots.txt  | `https://syntekra.com`     |
-| `VITE_CONTACT_EMAIL`         | Public contact email (contact section + footer). Hidden when empty.  | _empty_                    |
-| `VITE_CONTACT_FORM_ENDPOINT` | URL that receives the contact form as JSON POST. Hidden when empty.  | _empty_                    |
-| `VITE_CLIENT_PORTAL_ENABLED` | `true` shows the "Client login" link in header, mobile menu, footer  | `false`                    |
-| `VITE_CLIENT_PORTAL_URL`     | Client portal URL                                                    | `https://app.syntekra.com` |
-
-**At least one contact channel must be configured before deploying.** Without one, the contact
-section shows only its copy. A development-only notice appears in `npm run dev`, and the build
-prints a warning.
-
-### Contact form contract
-
-When `VITE_CONTACT_FORM_ENDPOINT` is set, the form sends:
-
-```http
-POST <endpoint>
-Content-Type: application/json
-
-{ "name": "", "email": "", "company": "", "topic": "", "message": "" }
+```bash
+npm run dev
 ```
 
-Any `2xx` response is shown as success; anything else shows an error (with the email address as
-a fallback when configured). The endpoint is responsible for validation, rate limiting, spam
-protection and delivery. It can be a future ASP.NET Core Web API route (enable CORS for the site
-origin) or a hosted form service. The form also includes a hidden honeypot field (`website`) that
-is never sent.
+### Available Commands
 
-## Prerendering and deployment
+| Command | Description |
+|---|---|
+| `npm install` | Install project dependencies |
+| `npm run dev` | Start the development server |
+| `npm run build` | Type-check, build, and prerender the website |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint` | Run Oxlint and ESLint |
+| `npm run format` | Format source files with Prettier |
 
-`npm run build` performs three steps:
+## Configuration
 
-1. `vite build` — client bundle with hashed asset names (safe for long-term caching).
-2. `vite build --ssr src/entry-server.ts` — a temporary server bundle.
-3. `scripts/prerender.mjs` — renders the page to HTML with `vue/server-renderer`, injects it into
-   `dist/index.html`, adds font preload hints, and writes `robots.txt` and `sitemap.xml`.
+The website uses Vite environment variables for deployment configuration.
 
-The output in `dist/` is fully static; host it on any static host or CDN. No Node.js server is
-needed. Recommended cache headers: `Cache-Control: public, max-age=31536000, immutable` for
-`/assets/*`, and `no-cache` for `index.html`.
+Refer to [`.env.example`](.env.example) for available settings.
 
-## Project structure
+**Security:** All variables prefixed with `VITE_` are embedded into the public JavaScript bundle. Never store API keys, passwords, access tokens, or other secrets in these variables.
 
+### Environment Variables
+
+| Variable | Description | Default |
+|---|---|---|
+| `VITE_SITE_URL` | Canonical origin used for SEO, sitemap, and robots.txt | `https://syntekra.com` |
+| `VITE_CONTACT_EMAIL` | Public contact email displayed on the website | Empty |
+| `VITE_CONTACT_FORM_ENDPOINT` | Endpoint receiving contact form submissions | Empty |
+| `VITE_CLIENT_PORTAL_ENABLED` | Enables the client login link when set to `true` | `false` |
+| `VITE_CLIENT_PORTAL_URL` | URL of the future client portal | `https://app.syntekra.com` |
+
+### Contact Configuration
+
+At least one contact method must be configured before launching the website.
+
+If neither `VITE_CONTACT_EMAIL` nor `VITE_CONTACT_FORM_ENDPOINT` is configured:
+
+- The contact section displays informational content only.
+- A development warning appears when running `npm run dev`.
+- A warning is printed during the production build.
+
+### Contact Form API
+
+When `VITE_CONTACT_FORM_ENDPOINT` is configured, the contact form submits a JSON request.
+
+**Method:** `POST`  
+**Content-Type:** `application/json`
+
+Example payload:
+
+```json
+{
+  "name": "",
+  "email": "",
+  "company": "",
+  "topic": "",
+  "message": ""
+}
 ```
-src/
-  assets/
-    main.css          design tokens (Tailwind v4 @theme), theme variables, base styles
-    fonts/            self-hosted Inter + Space Grotesk variable fonts (Latin subset, SIL OFL)
-    logos/            official Syntekra logo files (do not modify)
-  components/
-    layout/           SiteHeader (incl. mobile menu), SiteFooter
-    sections/         one component per page section
-    contact/          ContactForm
-    ui/               small reusable primitives (ButtonLink, SectionLabel, SiteLogo, ThemeToggle…)
-    visuals/          SystemsDiagram (hero), FlowLine
-  composables/        useTheme
-  config/site.ts      site-wide configuration, navigation, contact/portal settings
-  content/            shared copy (services)
-  entry-server.ts     build-time render entry used by the prerender script
-  main.ts             client entry (hydrates the prerendered HTML)
-public/               favicon, touch icon, Open Graph image
-scripts/prerender.mjs
+
+The form interprets any `2xx` HTTP response as successful. Other responses display an error message, with the configured email address available as a fallback.
+
+The receiving endpoint is responsible for:
+
+- Server-side input validation
+- Rate limiting
+- Spam protection
+- Email delivery or message storage
+- Appropriate security controls
+
+The frontend also includes a hidden honeypot field (`website`), which is not submitted to the endpoint.
+
+The contact endpoint can be implemented using **ASP.NET Core Web API** or an external form service.
+
+For a separately hosted API, configure CORS to permit requests from the website's origin.
+
+## Build and Deployment
+
+The website is prerendered into static HTML during the production build.
+
+Run:
+
+```bash
+npm run build
 ```
 
-## Design system notes
+### Build Process
 
-- **Colors** come from the official logo files and override the initial brief palette where they
-  differ: brand blue `#1162FE`, cyan `#00C8FC` (used sparingly), deep blue `#03328E`, and navy
-  `#03112C` (wordmark ink). Semantic tokens (`canvas`, `surface`, `ink`, `body`, `muted`, `line`,
-  `accent`) switch automatically between light and dark mode. `.on-dark` forces the dark token set
-  for always-dark panels.
-- **Geometry**: the recurring isometric marker, the hero diagram, the contact lattice and the
-  chamfered contact panel all use the exact edge slope of the Syntekra symbol (69 / 126.65 ≈ 28.6°).
-- **Typography**: Space Grotesk for headings, Inter for everything else. Uppercase is reserved for
-  small functional labels (`.label`).
-- **Theme**: the system preference is the default. The toggle persists an explicit choice in
-  `localStorage` (`syntekra-theme`). An inline script in `index.html` applies the theme before
-  first paint, so the wrong theme never flashes.
-- **Logo**: always use `SiteLogo.vue`, which renders the supplied SVGs unmodified (navy wordmark
-  on light backgrounds, white wordmark on dark ones).
+The production build consists of three stages:
 
-## Adding the client login later
+1. **Client build:** `vite build` generates optimized frontend assets with hashed filenames.
+2. **Server build:** `vite build --ssr src/entry-server.ts` generates a temporary server-side rendering bundle.
+3. **Static prerendering:** `scripts/prerender.mjs` renders the Vue application into HTML and generates the required SEO files.
 
-Set `VITE_CLIENT_PORTAL_ENABLED=true` (and `VITE_CLIENT_PORTAL_URL` if it differs). The link then
-appears in the desktop header, mobile menu and footer. No code changes are needed.
+The prerendering process:
+
+- Injects rendered HTML into `dist/index.html`
+- Adds font preload hints
+- Generates `robots.txt`
+- Generates `sitemap.xml`
+
+The resulting `dist/` directory contains the complete static website.
+
+**No Node.js server is required in production.**
+
+### Hosting
+
+The website can be deployed to any static hosting provider or CDN, including:
+
+- Cloudflare Workers Static Assets
+- Cloudflare Pages
+- GitHub Pages
+- Other static hosting services
+
+For Cloudflare Workers, the deployment configuration should point to the `dist/` directory.
+
+### Recommended Cache Headers
+
+| Asset | Cache-Control |
+|---|---|
+| `/assets/*` | `public, max-age=31536000, immutable` |
+| `/index.html` | `no-cache` |
+
+Long-term caching is appropriate for generated assets with content-hashed filenames.
+
+## Project Structure
+
+```text
+syntekra-web/
+├── public/
+│   ├── favicon
+│   ├── touch icon
+│   └── Open Graph image
+│
+├── scripts/
+│   └── prerender.mjs
+│
+├── src/
+│   ├── assets/
+│   │   ├── main.css
+│   │   ├── fonts/
+│   │   └── logos/
+│   │
+│   ├── components/
+│   │   ├── layout/
+│   │   ├── sections/
+│   │   ├── contact/
+│   │   ├── ui/
+│   │   └── visuals/
+│   │
+│   ├── composables/
+│   │   └── useTheme
+│   │
+│   ├── config/
+│   │   └── site.ts
+│   │
+│   ├── content/
+│   ├── entry-server.ts
+│   └── main.ts
+│
+├── .env.example
+├── package.json
+├── vite.config.ts
+└── README.md
+```
+
+### Directory Responsibilities
+
+| Directory | Purpose |
+|---|---|
+| `src/assets/` | Global styles, fonts, and official branding |
+| `src/components/layout/` | Header, footer, and navigation |
+| `src/components/sections/` | Individual landing-page sections |
+| `src/components/contact/` | Contact form components |
+| `src/components/ui/` | Reusable interface primitives |
+| `src/components/visuals/` | Custom diagrams and visual elements |
+| `src/composables/` | Reusable Vue composition logic |
+| `src/config/` | Centralized site configuration |
+| `src/content/` | Shared website content |
+| `scripts/` | Build-time prerendering utilities |
+| `public/` | Public static assets |
+
+## Design System
+
+The website follows Syntekra's visual identity, emphasizing precision, clarity, and professional software engineering.
+
+### Brand Colors
+
+The final palette is derived from the official Syntekra SVG logo assets.
+
+| Color | Hex | Usage |
+|---|---|---|
+| Brand Blue | `#1162FE` | Primary brand accent |
+| Electric Cyan | `#00C8FC` | Secondary accents |
+| Deep Blue | `#03328E` | Brand gradient and supporting details |
+| Navy | `#03112C` | Wordmark and dark surfaces |
+
+Semantic design tokens such as `canvas`, `surface`, `ink`, `body`, `muted`, `line`, and `accent` provide consistent styling across light and dark themes.
+
+### Typography
+
+- **Space Grotesk** — Headings and display typography
+- **Inter** — Body text, navigation, and interface elements
+
+Both fonts are self-hosted as variable fonts using Latin subsets under the SIL Open Font License.
+
+Uppercase typography is primarily reserved for small functional labels.
+
+### Geometry
+
+The website's geometric details are inspired by the official Syntekra symbol.
+
+The recurring isometric markers, hero diagram, contact lattice, and chamfered contact panel use the symbol's edge slope:
+
+`69 / 126.65 ≈ 28.6°`
+
+This establishes a consistent visual relationship between the logo and the website.
+
+### Light and Dark Themes
+
+The website supports both light and dark modes.
+
+- The system color preference is used by default.
+- Users can manually switch themes.
+- Explicit preferences are stored in `localStorage` under `syntekra-theme`.
+- An inline script applies the selected theme before the first render to prevent theme flashing.
+- The `.on-dark` utility applies dark-mode design tokens to sections that must always remain dark.
+
+### Logo Usage
+
+Always use the `SiteLogo.vue` component when displaying the Syntekra logo.
+
+The component uses the supplied SVG files without modifying their geometry or colors.
+
+- **Light backgrounds:** Navy wordmark
+- **Dark backgrounds:** White wordmark
+
+## Client Portal Integration
+
+The public website is prepared for a future authenticated client portal.
+
+To enable its login link, configure:
+
+```env
+VITE_CLIENT_PORTAL_ENABLED=true
+VITE_CLIENT_PORTAL_URL=https://app.syntekra.com
+```
+
+Once enabled, the client login link appears in the desktop navigation, mobile menu, and footer.
+
+No additional frontend code changes are required.
+
+## License and Copyright
+
+Copyright © 2026 Syntekra. All rights reserved.
+
+This repository is publicly accessible but is **not distributed under an open-source software license**.
+
+Unless otherwise permitted by applicable law or the relevant rights holder, copying, modifying, redistributing, or commercially reusing proprietary Syntekra source code and branding requires prior written authorization.
+
+The Syntekra name, logos, and visual identity are proprietary branding assets and are not offered for unrestricted reuse.
+
+Third-party software, libraries, and fonts retain their respective licenses.
+
+Public visibility of this repository does not grant additional intellectual property rights.
