@@ -1,0 +1,252 @@
+@import 'tailwindcss';
+
+/*
+ * Syntekra design system
+ * ----------------------------------------------------------------------------
+ * Brand colors are taken from the official logo assets (src/assets/logos),
+ * which take precedence over the initial brief palette:
+ *   #1162FE  logo primary blue   -> brand / primary actions
+ *   #00C8FC  logo cyan           -> restrained technical accent
+ *   #03328E  logo deep blue      -> shaded facets, pressed states
+ *   #03112C  logo wordmark navy  -> ink / dark surfaces
+ *
+ * Semantic tokens (canvas, surface, ink, body, ...) switch between light and
+ * dark mode through CSS variables, so components never need `dark:` color
+ * overrides. `.on-dark` forces the dark token set for always-dark bands.
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Self-hosted variable fonts (SIL OFL 1.1, see src/assets/fonts). Latin subset only. */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Space Grotesk Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url('./fonts/space-grotesk-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Metric-matched fallbacks keep layout stable while the web fonts load. */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107.12%;
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  src: local('Arial');
+  size-adjust: 103.5%;
+  ascent-override: 95%;
+  descent-override: 28%;
+  line-gap-override: 0%;
+}
+
+@theme {
+  --font-sans: 'Inter Variable', 'Inter Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    'Space Grotesk Variable', 'Space Grotesk Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', 'Segoe UI Mono', Menlo, monospace;
+
+  /* Fixed brand colors */
+  --color-brand: #1162fe;
+  --color-brand-hover: #0a52e0;
+  --color-brand-deep: #03328e;
+  --color-brand-cyan: #00c8fc;
+  --color-navy: #03112c;
+  --color-navy-900: #061630;
+  --color-navy-800: #0a1d3c;
+  --color-cloud: #f8fafc;
+  --color-slate: #64748b;
+
+  /* Type scale */
+  --text-display: clamp(2.5rem, 1.35rem + 4.1vw, 4.6rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+  --text-headline: clamp(1.95rem, 1.4rem + 1.9vw, 3.1rem);
+  --text-headline--line-height: 1.08;
+  --text-headline--letter-spacing: -0.028em;
+  --text-title: clamp(1.3rem, 1.15rem + 0.45vw, 1.6rem);
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.015em;
+  --text-lead: clamp(1.075rem, 1rem + 0.3vw, 1.25rem);
+  --text-lead--line-height: 1.6;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.08em;
+
+  --radius-xs: 2px;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Semantic, theme-aware tokens */
+@theme inline {
+  --color-canvas: var(--sx-canvas);
+  --color-surface: var(--sx-surface);
+  --color-raised: var(--sx-raised);
+  --color-ink: var(--sx-ink);
+  --color-body: var(--sx-body);
+  --color-muted: var(--sx-muted);
+  --color-line: var(--sx-line);
+  --color-line-strong: var(--sx-line-strong);
+  --color-accent: var(--sx-accent);
+  --color-focus: var(--sx-focus);
+}
+
+:root {
+  color-scheme: light;
+  --sx-canvas: #f8fafc;
+  --sx-surface: #ffffff;
+  --sx-raised: #f1f5f9;
+  --sx-ink: #03112c;
+  --sx-body: #3a475c;
+  --sx-muted: #5f6f86;
+  --sx-line: #e2e8f0;
+  --sx-line-strong: #c7d2e0;
+  --sx-accent: #1162fe;
+  --sx-focus: #1162fe;
+  --sx-header-h: 4.5rem;
+}
+
+.dark {
+  color-scheme: dark;
+  --sx-canvas: #040d20;
+  --sx-surface: #071429;
+  --sx-raised: #0c1c38;
+  --sx-ink: #ffffff;
+  --sx-body: #c3cddb;
+  --sx-muted: #8d9cb4;
+  --sx-line: #14264a;
+  --sx-line-strong: #22385f;
+  --sx-accent: #6a9dff;
+  --sx-focus: #6a9dff;
+}
+
+/* Always-dark bands (e.g. contact). Uses navy in light mode, a lifted navy in dark mode. */
+.on-dark {
+  color-scheme: dark;
+  --sx-canvas: #03112c;
+  --sx-surface: #061630;
+  --sx-raised: #0a1d3c;
+  --sx-ink: #ffffff;
+  --sx-body: #c3cddb;
+  --sx-muted: #93a3bb;
+  --sx-line: #16294d;
+  --sx-line-strong: #25406c;
+  --sx-accent: #6a9dff;
+  --sx-focus: #6a9dff;
+}
+
+.dark .on-dark {
+  --sx-canvas: #0a1a35;
+  --sx-surface: #0d2042;
+  --sx-raised: #11264c;
+  --sx-line: #1b3159;
+  --sx-line-strong: #2a4673;
+}
+
+@layer base {
+  html {
+    background-color: var(--sx-canvas);
+    color: var(--sx-body);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: calc(var(--sx-header-h) + 1rem);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--sx-ink);
+    font-family: var(--font-display);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-brand) 22%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--sx-focus);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+  }
+}
+
+@layer components {
+  /* Consistent page grid */
+  .container-page {
+    width: 100%;
+    max-width: 82rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 40rem) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .container-page {
+      padding-inline: 3rem;
+    }
+  }
+
+  /* Small functional label, the only place uppercase is used */
+  .label {
+    font-size: var(--text-label);
+    line-height: var(--text-label--line-height);
+    letter-spacing: var(--text-label--letter-spacing);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
