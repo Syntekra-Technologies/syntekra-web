@@ -1,0 +1,23 @@
+name: PR Build Check
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  # the job id is the check name GitHub shows (and what the master ruleset requires)
+  pr-build-check:
+    name: pr-build-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
