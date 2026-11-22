@@ -9,6 +9,7 @@ import AboutSection from '@/components/sections/AboutSection.vue'
 import ContactSection from '@/components/sections/ContactSection.vue'
 </script>
 
+
 <template>
   <div id="top">
     <a
